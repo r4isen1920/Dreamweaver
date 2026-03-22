@@ -1,6 +1,6 @@
-# WAILA
+# Dreamweaver
 
-WAILA is a simple Minecraft: Bedrock Edition Add-On that displays what you are looking at on top of the screen. It features the ability to see any block and entity, and support for custom ones too. As the features of this Add-On fully relies on Scripts API, it does confine with the limitations imposed by requiring `player.json` and thus can even be added in conjunction with other Add-Ons.
+Dreamweaver is a Minecraft: Bedrock Edition Add-On that allows you to place and import schematics easily, and across the world.
 
 ## Setting up the development environment
 

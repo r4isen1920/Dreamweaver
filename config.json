@@ -1,5 +1,4 @@
 {
-	"$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.2.json",
 	"author": "r4isen1920",
 	"name": "Dreamweaver",
 	"packs": {
@@ -11,52 +10,90 @@
 		"filterDefinitions": {
 			"gametests": {
 				"url": "github.com/Bedrock-OSS/regolith-filters",
-				"version": "1.5.3"
+				"version": "1.7.4"
 			},
 			"jsonte": {
 				"url": "github.com/MCDevKit/regolith-library",
-				"version": "2.14.0"
+				"version": "2.15.0"
 			},
 			"packer": {
 				"url": "github.com/MCDevKit/regolith-library",
 				"version": "1.0.3"
+			},
+			"meta_gen": {
+				"url": "github.com/r4isen1920/regolith-filters",
+				"version": "1.2.0"
 			}
 		},
+		"formatVersion": "1.2.0",
 		"profiles": {
-			"ci": {
+			"base": {
+				"export": {
+					"readOnly": false,
+					"target": "development"
+				},
+				"filters": [
+					{
+						"arguments": [
+							"--cache-all",
+							"--include",
+							"data/jsonte/soundDurations.templ",
+							"data/jsonte"
+						],
+						"filter": "jsonte"
+					},
+					{
+						"filter": "meta_gen",
+						"settings": {
+							"syncVersionFromTag": true
+						}
+					}
+				]
+			},
+			"build": {
 				"export": {
 					"readOnly": false,
 					"target": "local"
 				},
 				"filters": [
 					{
-						"filter": "gametests",
-						"settings": {
-							"buildOptions": {
-								"bundle": true,
-								"entryPoints": [
-									"data/gametests/src/main.js"
-								],
-								"format": "esm",
-								"minify": true,
-								"target": "es2020"
-							},
-							"modules": [
-								"@minecraft/server@1.10.0"
-							],
-							"outdir": "BP/scripts/r4isen1920/dreamweaver",
-							"outfile": "BP/scripts/r4isen1920/dreamweaver/main.js"
-						}
+						"profile": "build-dev"
 					},
 					{
-						"filter": "jsonte"
+						"profile": "build-release"
+					}
+				]
+			},
+			"build-dev": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"profile": "default"
 					},
 					{
 						"filter": "packer",
 						"settings": {
-							"output": "Dreamweaver-${git.tag ?? 'test'}${git.tagCommit !== git.commit ? '-' + git.commit.substr(0, 6) : ''}.mcworld",
-							"worldName": "Dreamweaver-${git.tag ?? 'test'}",
-							"worldPath": "../../world"
+							"output": "Dreamweaver-${git.tag ?? 'test'}-dev.mcaddon"
+						}
+					}
+				]
+			},
+			"build-release": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"profile": "release"
+					},
+					{
+						"filter": "packer",
+						"settings": {
+							"output": "Dreamweaver-${git.tag ?? 'test'}.mcaddon"
 						}
 					}
 				]
@@ -68,58 +105,72 @@
 				},
 				"filters": [
 					{
-						"filter": "gametests",
-						"settings": {
-							"buildOptions": {
-								"bundle": true,
-								"entryPoints": [
-									"data/gametests/src/main.js"
-								],
-								"format": "esm",
-								"minify": false,
-								"target": "es2020"
-							},
-							"modules": [
-								"@minecraft/server@1.10.0"
-							],
-							"outdir": "BP/scripts/r4isen1920/dreamweaver",
-							"outfile": "BP/scripts/r4isen1920/dreamweaver/main.js"
-						}
+						"profile": "base"
 					},
 					{
-						"filter": "jsonte"
+						"profile": "scripts-dev"
 					}
 				]
 			},
-			"raw": {
+			"release": {
 				"export": {
 					"readOnly": false,
 					"target": "development"
 				},
 				"filters": [
 					{
+						"profile": "base"
+					},
+					{
+						"profile": "scripts"
+					}
+				]
+			},
+			"scripts": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
 						"filter": "gametests",
 						"settings": {
 							"buildOptions": {
-								"bundle": false,
-								"entryPoints": [
-									"data/gametests/src/*.js",
-									"data/gametests/src/**/*.js",
-									"data/gametests/src/main.js"
+								"bundle": true,
+								"dropLabels": [
+									"DEBUG",
+									"LOGGING"
 								],
-								"format": "esm",
-								"minify": false,
-								"target": "es2020"
+								"minify": true
 							},
 							"modules": [
-								"@minecraft/server@1.10.0"
+								"@minecraft/server@2.5.0",
+								"@minecraft/server-ui@2.0.0"
 							],
-							"outdir": "BP/scripts/r4isen1920/dreamweaver",
-							"outfile": "BP/scripts/r4isen1920/dreamweaver/main.js"
+							"outfile": "BP/scripts/main.js"
 						}
-					},
+					}
+				]
+			},
+			"scripts-dev": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
 					{
-						"filter": "jsonte"
+						"filter": "gametests",
+						"settings": {
+							"buildOptions": {
+								"minify": false
+							},
+							"debugBuild": true,
+							"modules": [
+								"@minecraft/server@2.5.0",
+								"@minecraft/server-ui@2.0.0"
+							],
+							"outfile": "BP/scripts/main.js"
+						}
 					}
 				]
 			}

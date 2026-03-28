@@ -26,9 +26,9 @@ export async function captureFlow(player: Player): Promise<void> {
 
 	const vol = sel.getVolume()!;
 	log.info(`${player.name} starting capture...`);
-	player.sendMessage("§7Capturing...");
+	player.sendMessage("§7Capturing... §8(you may be teleported)");
 
-	const schematic = await CaptureService.capture(player.dimension, vol);
+	const schematic = await CaptureService.capture(player.dimension, vol, player);
 	log.info(`${player.name} captured ${schematic.getTotalNonAir()} blocks`);
 	await showCaptureResult(player, schematic);
 }

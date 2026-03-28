@@ -1,16 +1,21 @@
 import {
 	system,
 	BlockPermutation,
+	BlockVolume,
 	Dimension,
+	type Player,
 	type Vector3,
 } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
 import { Schematic, AIR_INDEX } from "../codec/Schematic.js";
 import DreamweaverLogger from "../utils/Logger.js";
+import { ensureLoaded, type RestoreHandle } from "../utils/ChunkLoader.js";
+import { showActionBarProgress, clearActionBar } from "../utils/ProgressBar.js";
 
 const log = DreamweaverLogger.get("Placement");
 
 const PREVIEW_TICKS = 200; // 10 seconds
+const PROGRESS_INTERVAL = 200;
 
 //#region Types
 
@@ -27,23 +32,37 @@ export class PlacementSession {
 	readonly schematic: Schematic;
 	readonly origin: Vec3;
 	readonly dimension: Dimension;
+	readonly player: Player;
 	private savedBlocks: SavedBlock[] = [];
 	private previewHandle?: number;
 	private jobId?: number;
+	private restoreHandle?: RestoreHandle;
 
-	constructor(schematic: Schematic, origin: Vector3, dimension: Dimension) {
+	constructor(
+		schematic: Schematic,
+		origin: Vector3,
+		dimension: Dimension,
+		player: Player,
+	) {
 		this.schematic = schematic;
 		this.origin = Vec3.from(origin);
 		this.dimension = dimension;
+		this.player = player;
 	}
 
 	//#endregion
 
 	//#region Placement
 
-	place(): Promise<number> {
+	async place(): Promise<number> {
 		this.savedBlocks = [];
+
+		const end = this.origin.add(this.schematic.size).subtract(1, 1, 1);
+		const volume = new BlockVolume(this.origin, end);
+		this.restoreHandle = await ensureLoaded(this.player, volume);
+
 		let placed = 0;
+		const totalNonAir = this.schematic.getTotalNonAir();
 		const self = this;
 
 		return new Promise((resolve) => {
@@ -69,10 +88,17 @@ export class PlacementSession {
 							BlockPermutation.resolve(entry.typeId, entry.states),
 						);
 						placed++;
+
+						if (placed % PROGRESS_INTERVAL === 0) {
+							showActionBarProgress(self.player, "§7Placing...", placed, totalNonAir);
+						}
 						yield;
 					}
 
 					self.jobId = undefined;
+					clearActionBar(self.player);
+					self.restoreHandle?.restore();
+					self.restoreHandle = undefined;
 					log.info(`Placed ${placed} blocks`);
 					resolve(placed);
 				})(),
@@ -97,30 +123,58 @@ export class PlacementSession {
 		this.undo();
 	}
 
-	undo(): Promise<void> {
+	async undo(): Promise<void> {
 		const blocks = this.savedBlocks;
 		this.savedBlocks = [];
 		const dim = this.dimension;
 
-		return new Promise((resolve) => {
-			system.runJob(
-				(function* () {
-					for (const saved of blocks) {
-						const block = dim.getBlock(saved.pos);
-						block?.setPermutation(saved.permutation);
-						yield;
-					}
-					log.info(`Undid ${blocks.length} blocks`);
-					resolve();
-				})(),
+		if (blocks.length > 0) {
+			const positions = blocks.map((b) => b.pos);
+			const min = positions.reduce(
+				(a, b) => Vec3.from(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z)),
+				Vec3.from(positions[0]),
 			);
-		});
+			const max = positions.reduce(
+				(a, b) => Vec3.from(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z)),
+				Vec3.from(positions[0]),
+			);
+			const undoHandle = await ensureLoaded(this.player, new BlockVolume(min, max));
+
+			return new Promise((resolve) => {
+				const total = blocks.length;
+				const player = this.player;
+				let done = 0;
+
+				system.runJob(
+					(function* () {
+						for (const saved of blocks) {
+							const block = dim.getBlock(saved.pos);
+							block?.setPermutation(saved.permutation);
+							done++;
+
+							if (done % PROGRESS_INTERVAL === 0) {
+								showActionBarProgress(player, "§7Undoing...", done, total);
+							}
+							yield;
+						}
+						clearActionBar(player);
+						undoHandle.restore();
+						log.info(`Undid ${blocks.length} blocks`);
+						resolve();
+					})(),
+				);
+			});
+		}
 	}
 
 	cancel(): void {
 		if (this.jobId !== undefined) {
 			system.clearJob(this.jobId);
 			this.jobId = undefined;
+		}
+		if (this.restoreHandle) {
+			this.restoreHandle.restore();
+			this.restoreHandle = undefined;
 		}
 	}
 

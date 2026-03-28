@@ -1,4 +1,10 @@
-import { BlockVolume, ItemStack, ItemLockMode, Player, type Vector3 } from "@minecraft/server";
+import {
+	BlockVolume,
+	ItemStack,
+	ItemLockMode,
+	Player,
+	type Vector3,
+} from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
 
 //#region Constants
@@ -14,14 +20,16 @@ export const PREVIEW_TICKS = 200; // 10 seconds
 //#region Wand
 
 export function giveWand(player: Player): void {
-  const item = new ItemStack(WAND_ITEM);
-  item.nameTag = WAND_NAME;
-  item.lockMode = ItemLockMode.inventory;
-  item.keepOnDeath = true;
+	const item = new ItemStack(WAND_ITEM);
+	item.nameTag = WAND_NAME;
+	item.lockMode = ItemLockMode.inventory;
+	item.keepOnDeath = true;
 
-  const inventory = player.getComponent("inventory");
-  inventory?.container?.addItem(item);
-  player.sendMessage("§dReceived Dreamweaver Wand! §7Right-click to set Pos1, break to set Pos2.");
+	const inventory = player.getComponent("inventory");
+	inventory?.container?.addItem(item);
+	player.sendMessage(
+		"§dReceived Dreamweaver Wand! §7Right-click to set Pos1, break to set Pos2.",
+	);
 }
 
 //#endregion
@@ -29,7 +37,7 @@ export function giveWand(player: Player): void {
 //#region Volume
 
 export function makeVolume(a: Vector3, b: Vector3): BlockVolume {
-  return new BlockVolume(a, b);
+	return new BlockVolume(a, b);
 }
 
 //#endregion
@@ -37,15 +45,15 @@ export function makeVolume(a: Vector3, b: Vector3): BlockVolume {
 //#region Indexing
 
 export function posToIndex(pos: Vector3, size: Vector3): number {
-  return pos.y * size.x * size.z + pos.z * size.x + pos.x;
+	return pos.y * size.x * size.z + pos.z * size.x + pos.x;
 }
 
 export function indexToPos(index: number, size: Vector3): Vec3 {
-  const y = Math.floor(index / (size.x * size.z));
-  const rem = index % (size.x * size.z);
-  const z = Math.floor(rem / size.x);
-  const x = rem % size.x;
-  return Vec3.from(x, y, z);
+	const y = Math.floor(index / (size.x * size.z));
+	const rem = index % (size.x * size.z);
+	const z = Math.floor(rem / size.x);
+	const x = rem % size.x;
+	return Vec3.from(x, y, z);
 }
 
 //#endregion
@@ -53,11 +61,11 @@ export function indexToPos(index: number, size: Vector3): Vec3 {
 //#region Formatting
 
 export function vec3String(v: Vector3): string {
-  return `${v.x}, ${v.y}, ${v.z}`;
+	return `${v.x}, ${v.y}, ${v.z}`;
 }
 
 export function formatCount(n: number): string {
-  return n.toLocaleString();
+	return n.toLocaleString();
 }
 
 //#endregion

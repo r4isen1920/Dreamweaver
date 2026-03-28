@@ -7,7 +7,8 @@
 		"@minecraft/math": "^2.4.0",
 		"@minecraft/server": "^2.5.0",
 		"@minecraft/server-ui": "^2.0.0",
-		"@minecraft/vanilla-data": "^1.26.2"
+		"@minecraft/vanilla-data": "^1.26.2",
+		"fflate": "^0.8.2"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

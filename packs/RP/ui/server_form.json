@@ -1,0 +1,7 @@
+{
+
+	"custom_input@settings_common.option_text_edit": {
+		"$max_text_edit_length": 65535
+	}
+
+}

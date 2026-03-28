@@ -1,13 +1,26 @@
 import { system, BlockVolume, Dimension } from "@minecraft/server";
-import { Vec3, Logger } from "@bedrock-oss/bedrock-boost";
-import { Schematic, AIR_INDEX } from "./Schematic.js";
-import { posToIndex } from "./Utils.js";
+import { Vec3 } from "@bedrock-oss/bedrock-boost";
+import { Schematic, AIR_INDEX } from "../codec/Schematic.js";
+import { posToIndex } from "../utils/Indexing.js";
+import DreamweaverLogger from "../utils/Logger.js";
 
-const log = Logger.getLogger("Capture");
+
 
 //#region Capture
-
+/**
+ * Handles capturing a region of the world into a Schematic object.
+ * It iterates through the specified volume, reads block data, and constructs a Schematic representation.
+ */
 export class CaptureService {
+	private static readonly log = DreamweaverLogger.get("Capture");
+
+	/**
+	 * Given a dimension and a block volume, captures the blocks within that volume and returns a Schematic object representing it.
+	 * This function runs the capture process as a job and slices it into several ticks.
+	 * @param dimension 
+	 * @param volume 
+	 * @returns 
+	 */
 	static capture(
 		dimension: Dimension,
 		volume: BlockVolume,
@@ -21,7 +34,7 @@ export class CaptureService {
 				(function* () {
 					for (const loc of volume.getBlockLocationIterator()) {
 						const block = dimension.getBlock(loc);
-						if (!block || block.typeId === "minecraft:air") {
+						if (!block || block.isAir) {
 							yield;
 							continue;
 						}
@@ -34,7 +47,7 @@ export class CaptureService {
 						yield;
 					}
 
-					log.info(
+					CaptureService.log.info(
 						`Capture complete: ${schematic.getTotalNonAir()} blocks, ${schematic.palette.length} palette entries`,
 					);
 					resolve(schematic);
@@ -44,4 +57,3 @@ export class CaptureService {
 	}
 }
 
-//#endregion

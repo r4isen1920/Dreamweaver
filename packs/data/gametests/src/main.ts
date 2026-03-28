@@ -1,5 +1,7 @@
-import { SelectionManager } from "./Selection.js";
-import { CommandHandler } from "./Commands.js";
+import { initializeEventSubscriptions } from "./utils/EventDecorators.js";
 
-SelectionManager.registerEvents();
-CommandHandler.register();
+// Side-effect imports: trigger decorator registration
+import "./ui/Selection.js";
+import "./ui/Commands.js";
+
+initializeEventSubscriptions();

@@ -1,4 +1,4 @@
-import { posToIndex, indexToPos } from "./Utils.js";
+import { posToIndex, indexToPos } from "../utils/Indexing.js";
 import { BlockVolume, type Vector3 } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
 

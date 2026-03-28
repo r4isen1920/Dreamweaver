@@ -4,11 +4,13 @@ import {
 	Dimension,
 	type Vector3,
 } from "@minecraft/server";
-import { Vec3, Logger } from "@bedrock-oss/bedrock-boost";
-import { Schematic, AIR_INDEX } from "./Schematic.js";
-import { PREVIEW_TICKS } from "./Utils.js";
+import { Vec3 } from "@bedrock-oss/bedrock-boost";
+import { Schematic, AIR_INDEX } from "../codec/Schematic.js";
+import DreamweaverLogger from "../utils/Logger.js";
 
-const log = Logger.getLogger("Placement");
+const log = DreamweaverLogger.get("Placement");
+
+const PREVIEW_TICKS = 200; // 10 seconds
 
 //#region Types
 

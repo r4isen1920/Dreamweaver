@@ -5,33 +5,57 @@ import {
 	BlockStates,
 } from "./Schematic.js";
 import { deflateSync, inflateSync } from "fflate";
+import CodecBinary from "./Binary.js";
+
+
 
 //#region Codec
+/**
+ * Handles encoding/decoding schematics to/from compact string format. The format is:
+ * - Binary serialization of the schematic data (version, size, palette, blocks)
+ * - Compression via DEFLATE
+ * - To Base64
+ * - Split into chunks with headers
+ */
+export default class Codec {
+	/**
+	 * The prefix for each part of the encoded schematic, followed by "part/total:" and the chunk data.
+	 * It is used to identify and parse the parts during decoding. 
+	 * 
+	 * The prefix also denotes the format version, for future compatibility.
+	 */
+	private static readonly MAGIC = "DW01:";
+	/**
+	 * Maximum length of each part, including the header.
+	 * This number could theoretically be much higher--that is, within the 32-bit int limit--but intentionally keeping it small
+	 * to ensure a balance in stability, compatibility, and performance. Especially fucking bedrock has to work cross-platform kms
+	 */
+	private static readonly MAX_PART_LENGTH = 65_535;
+	/** Characters used for Base64 encoding */
+	private static readonly B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	/** Prefix for Minecraft block IDs--to differentiate custom blocks from vanilla ones */
+	private static readonly MC_PREFIX = "minecraft:";
 
-const MAGIC = "DW1:";
-const MAX_PART_LENGTH = 65535;
 
-const B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	/** Cannot be instantiated */
+	private constructor() {}
 
-const MC_PREFIX = "minecraft:";
 
-export interface PartHeader {
-	part: number;
-	total: number;
-	data: string;
-}
-
-export class Codec {
+	/**
+	 * Transforms a Schematic object into a compact string format suitable for sharing.
+	 * @param schematic The schematic to encode.
+	 * @returns An array of strings representing the encoded schematic parts.
+	 */
 	static encode(schematic: Schematic): string[] {
 		const raw = Codec.serializeBinary(schematic);
 		const compressed = deflateSync(raw);
 		const b64 = Codec.toBase64(compressed);
 
-		// Dynamic chunk sizing: header = "DW1:X/Y:" where X and Y grow with part count
+		// Dynamic chunk sizing: header = "DW01:X/Y:" where X and Y grow with part count
 		let totalParts = 1;
 		while (true) {
-			const headerLen = MAGIC.length + String(totalParts).length * 2 + 2;
-			const chunkSize = MAX_PART_LENGTH - headerLen;
+			const headerLen = this.MAGIC.length + String(totalParts).length * 2 + 2;
+			const chunkSize = this.MAX_PART_LENGTH - headerLen;
 			const needed = Math.max(1, Math.ceil(b64.length / chunkSize));
 			if (needed <= totalParts) {
 				totalParts = needed;
@@ -40,21 +64,26 @@ export class Codec {
 			totalParts = needed;
 		}
 
-		const headerLen = MAGIC.length + String(totalParts).length * 2 + 2;
-		const chunkSize = MAX_PART_LENGTH - headerLen;
+		const headerLen = this.MAGIC.length + String(totalParts).length * 2 + 2;
+		const chunkSize = this.MAX_PART_LENGTH - headerLen;
 
 		const parts: string[] = [];
 		for (let i = 0; i < totalParts; i++) {
 			const chunk = b64.slice(i * chunkSize, (i + 1) * chunkSize);
-			parts.push(`${MAGIC}${i + 1}/${totalParts}:${chunk}`);
+			parts.push(`${this.MAGIC}${i + 1}/${totalParts}:${chunk}`);
 		}
 		return parts;
 	}
 
+	/**
+	 * Describes the header of each part in the encoded schematic string, used for parsing and reassembling the data during decoding.
+	 * @param str The encoded schematic string part.
+	 * @returns The parsed header information or null if the string is invalid.
+	 */
 	static parseHeader(str: string): PartHeader | null {
 		const trimmed = str.trim();
-		if (!trimmed.startsWith(MAGIC)) return null;
-		const rest = trimmed.slice(MAGIC.length);
+		if (!trimmed.startsWith(this.MAGIC)) return null;
+		const rest = trimmed.slice(this.MAGIC.length);
 		const match = rest.match(/^(\d+)\/(\d+):(.*)$/);
 		if (match) {
 			return {
@@ -66,6 +95,11 @@ export class Codec {
 		return { part: 1, total: 1, data: rest };
 	}
 
+	/**
+	 * Parses the encoded schematic parts, validates them, and reconstructs the original Schematic object.
+	 * @param parts Parts of the encoded schematic string, each containing a header and Base64 data.
+	 * @returns The reconstructed Schematic object.
+	 */
 	static decode(parts: string[]): Schematic {
 		const parsed = parts.map((p) => {
 			const h = Codec.parseHeader(p);
@@ -105,10 +139,12 @@ export class Codec {
 		return Codec.deserializeBinary(raw);
 	}
 
-	//#region Binary serialization
+
+
+	//#region Serialization
 
 	private static serializeBinary(schematic: Schematic): Uint8Array {
-		const buf = new BinaryWriter();
+		const buf = new CodecBinary.Writer();
 
 		// Header: version (1 byte) + size (3× uint16 LE = 6 bytes) = 7 bytes
 		buf.writeUint8(schematic.version);
@@ -120,16 +156,16 @@ export class Codec {
 		const entries = schematic.palette.toArray();
 		buf.writeVarint(entries.length);
 		for (const entry of entries) {
-			const typeId = entry.typeId.startsWith(MC_PREFIX)
-				? entry.typeId.slice(MC_PREFIX.length)
+			const typeId = entry.typeId.startsWith(this.MC_PREFIX)
+				? entry.typeId.slice(this.MC_PREFIX.length)
 				: ":" + entry.typeId;
 			buf.writeString(typeId);
 
 			const stateKeys = Object.keys(entry.states);
 			buf.writeVarint(stateKeys.length);
 			for (const key of stateKeys) {
-				const shortKey = key.startsWith(MC_PREFIX)
-					? key.slice(MC_PREFIX.length)
+				const shortKey = key.startsWith(this.MC_PREFIX)
+					? key.slice(this.MC_PREFIX.length)
 					: ":" + key;
 				buf.writeString(shortKey);
 
@@ -169,7 +205,7 @@ export class Codec {
 	}
 
 	private static deserializeBinary(data: Uint8Array): Schematic {
-		const buf = new BinaryReader(data);
+		const buf = new CodecBinary.Reader(data);
 
 		const version = buf.readUint8();
 		if (version !== Schematic.FORMAT_VERSION) {
@@ -185,7 +221,7 @@ export class Codec {
 		const entries: PaletteEntry[] = [];
 		for (let i = 0; i < paletteLen; i++) {
 			const rawId = buf.readString();
-			const typeId = rawId.startsWith(":") ? rawId.slice(1) : MC_PREFIX + rawId;
+			const typeId = rawId.startsWith(":") ? rawId.slice(1) : this.MC_PREFIX + rawId;
 
 			const stateCount = buf.readVarint();
 			const states: BlockStates = {};
@@ -193,7 +229,7 @@ export class Codec {
 				const rawKey = buf.readString();
 				const key = rawKey.startsWith(":")
 					? rawKey.slice(1)
-					: MC_PREFIX + rawKey;
+					: this.MC_PREFIX + rawKey;
 
 				const tag = buf.readUint8();
 				if (tag <= 1) {
@@ -222,7 +258,7 @@ export class Codec {
 		return new Schematic({ x: sizeX, y: sizeY, z: sizeZ }, palette, blocks);
 	}
 
-	//#endregion
+
 
 	//#region Base64
 
@@ -233,17 +269,17 @@ export class Codec {
 			const b1 = i + 1 < bytes.length ? bytes[i + 1] : 0;
 			const b2 = i + 2 < bytes.length ? bytes[i + 2] : 0;
 
-			result += B64[b0 >> 2];
-			result += B64[((b0 & 3) << 4) | (b1 >> 4)];
-			if (i + 1 < bytes.length) result += B64[((b1 & 0xf) << 2) | (b2 >> 6)];
-			if (i + 2 < bytes.length) result += B64[b2 & 0x3f];
+			result += this.B64[b0 >> 2];
+			result += this.B64[((b0 & 3) << 4) | (b1 >> 4)];
+			if (i + 1 < bytes.length) result += this.B64[((b1 & 0xf) << 2) | (b2 >> 6)];
+			if (i + 2 < bytes.length) result += this.B64[b2 & 0x3f];
 		}
 		return result;
 	}
 
 	private static fromBase64(b64: string): Uint8Array {
 		const lookup = new Map<string, number>();
-		for (let i = 0; i < B64.length; i++) lookup.set(B64[i], i);
+		for (let i = 0; i < this.B64.length; i++) lookup.set(this.B64[i], i);
 
 		const clean = b64.replace(/[^A-Za-z0-9\-_]/g, "");
 		const bytes: number[] = [];
@@ -261,140 +297,19 @@ export class Codec {
 
 		return new Uint8Array(bytes);
 	}
-
-	//#endregion
 }
 
-//#endregion
 
-//#region Binary helpers
 
-class BinaryWriter {
-	private chunks: number[] = [];
-
-	writeUint8(v: number): void {
-		this.chunks.push(v & 0xff);
-	}
-
-	writeUint16(v: number): void {
-		this.chunks.push(v & 0xff, (v >> 8) & 0xff);
-	}
-
-	writeInt32(v: number): void {
-		this.chunks.push(
-			v & 0xff,
-			(v >> 8) & 0xff,
-			(v >> 16) & 0xff,
-			(v >> 24) & 0xff,
-		);
-	}
-
-	writeVarint(v: number): void {
-		while (v >= 0x80) {
-			this.chunks.push((v & 0x7f) | 0x80);
-			v >>>= 7;
-		}
-		this.chunks.push(v);
-	}
-
-	writeZigzag(v: number): void {
-		this.writeVarint((v << 1) ^ (v >> 31));
-	}
-
-	writeString(s: string): void {
-		const encoded: number[] = [];
-		for (let i = 0; i < s.length; i++) {
-			const code = s.charCodeAt(i);
-			if (code < 0x80) {
-				encoded.push(code);
-			} else if (code < 0x800) {
-				encoded.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
-			} else {
-				encoded.push(
-					0xe0 | (code >> 12),
-					0x80 | ((code >> 6) & 0x3f),
-					0x80 | (code & 0x3f),
-				);
-			}
-		}
-		this.writeVarint(encoded.length);
-		for (const b of encoded) this.chunks.push(b);
-	}
-
-	finish(): Uint8Array {
-		return new Uint8Array(this.chunks);
-	}
+//#region Types
+/**
+ * Describes the header of each part in the encoded schematic string, used for parsing and reassembling the data during decoding.
+ */
+export interface PartHeader {
+	/** The index of this part in the sequence. */
+	part: number;
+	/** The total number of parts in the sequence. */
+	total: number;
+	/** The Base64-encoded data of this part. */
+	data: string;
 }
-
-class BinaryReader {
-	private data: Uint8Array;
-	private pos = 0;
-
-	constructor(data: Uint8Array) {
-		this.data = data;
-	}
-
-	readUint8(): number {
-		return this.data[this.pos++];
-	}
-
-	readUint16(): number {
-		const v = this.data[this.pos] | (this.data[this.pos + 1] << 8);
-		this.pos += 2;
-		return v;
-	}
-
-	readInt32(): number {
-		const v =
-			this.data[this.pos] |
-			(this.data[this.pos + 1] << 8) |
-			(this.data[this.pos + 2] << 16) |
-			(this.data[this.pos + 3] << 24);
-		this.pos += 4;
-		return v;
-	}
-
-	readVarint(): number {
-		let v = 0;
-		let shift = 0;
-		while (true) {
-			const b = this.data[this.pos++];
-			v |= (b & 0x7f) << shift;
-			if ((b & 0x80) === 0) return v >>> 0;
-			shift += 7;
-		}
-	}
-
-	readZigzag(): number {
-		const n = this.readVarint();
-		return (n >>> 1) ^ -(n & 1);
-	}
-
-	readString(): string {
-		const len = this.readVarint();
-		let result = "";
-		const end = this.pos + len;
-		while (this.pos < end) {
-			const b = this.data[this.pos];
-			if (b < 0x80) {
-				result += String.fromCharCode(b);
-				this.pos++;
-			} else if (b < 0xe0) {
-				result += String.fromCharCode(
-					((b & 0x1f) << 6) | (this.data[this.pos + 1] & 0x3f),
-				);
-				this.pos += 2;
-			} else {
-				result += String.fromCharCode(
-					((b & 0xf) << 12) |
-						((this.data[this.pos + 1] & 0x3f) << 6) |
-						(this.data[this.pos + 2] & 0x3f),
-				);
-				this.pos += 3;
-			}
-		}
-		return result;
-	}
-}
-
-//#endregion

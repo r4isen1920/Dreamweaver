@@ -3,6 +3,7 @@ import {
 	BlockPermutation,
 	BlockVolume,
 	Dimension,
+	Entity,
 	type Player,
 	type Vector3,
 } from "@minecraft/server";
@@ -14,8 +15,11 @@ import { showActionBarProgress, clearActionBar } from "../utils/ProgressBar.js";
 
 const log = DreamweaverLogger.get("Placement");
 
-const PREVIEW_TICKS = 200; // 10 seconds
 const PROGRESS_INTERVAL = 200;
+const HOLOGRAM_ENTITY = "dreamweaver:hologram";
+const CULL_DISTANCE = 64;
+const CULL_INTERVAL = 10;
+const SPAWNS_PER_TICK = 20;
 
 //#region Types
 
@@ -34,9 +38,10 @@ export class PlacementSession {
 	readonly dimension: Dimension;
 	readonly player: Player;
 	private savedBlocks: SavedBlock[] = [];
-	private previewHandle?: number;
 	private jobId?: number;
 	private restoreHandle?: RestoreHandle;
+	private hologramEntities: Entity[] = [];
+	private cullRunId?: number;
 
 	constructor(
 		schematic: Schematic,
@@ -106,22 +111,109 @@ export class PlacementSession {
 		});
 	}
 
+	//#region Hologram Preview
+
 	async preview(): Promise<number> {
-		const placed = await this.place();
-		this.previewHandle = system.runTimeout(() => {
-			this.clearPreview();
-		}, PREVIEW_TICKS);
-		return placed;
+		const totalNonAir = this.schematic.getTotalNonAir();
+		const self = this;
+		let spawned = 0;
+
+		return new Promise((resolve) => {
+			self.jobId = system.runJob(
+				(function* () {
+					const playerPos = Vec3.from(self.player.location);
+
+					for (let i = 0; i < self.schematic.blocks.length; i++) {
+						const palIdx = self.schematic.blocks[i];
+						if (palIdx === AIR_INDEX) continue;
+
+						const rel = self.schematic.posAt(i);
+						const worldPos = self.origin.add(rel);
+
+						if (playerPos.distance(worldPos) > CULL_DISTANCE) continue;
+
+						const entry = self.schematic.palette.get(palIdx);
+						if (!entry) continue;
+
+						try {
+							const entity = self.dimension.spawnEntity(
+								HOLOGRAM_ENTITY,
+								{ x: worldPos.x + 0.5, y: worldPos.y, z: worldPos.z + 0.5 },
+							);
+							entity.runCommand(
+								`replaceitem entity @s slot.weapon.mainhand 0 ${entry.typeId}`,
+							);
+							self.hologramEntities.push(entity);
+							spawned++;
+						} catch {
+							// Skip if entity spawn fails (e.g. unloaded chunk)
+						}
+
+						if (spawned % PROGRESS_INTERVAL === 0) {
+							showActionBarProgress(self.player, "§7Previewing...", spawned, totalNonAir);
+						}
+						if (spawned % SPAWNS_PER_TICK === 0) yield;
+					}
+
+					self.jobId = undefined;
+					clearActionBar(self.player);
+					self.startCulling();
+					log.info(`Previewing ${spawned} hologram entities`);
+					resolve(spawned);
+				})(),
+			);
+		});
+	}
+
+	private startCulling(): void {
+		if (this.cullRunId !== undefined) return;
+		this.cullRunId = system.runInterval(() => {
+			const playerPos = Vec3.from(this.player.location);
+			this.hologramEntities = this.hologramEntities.filter((entity) => {
+				try {
+					if (playerPos.distance(entity.location) > CULL_DISTANCE) {
+						entity.triggerEvent("dreamweaver:instant_despawn");
+						return false;
+					}
+					return true;
+				} catch {
+					// Entity already invalid/removed
+					return false;
+				}
+			});
+
+			if (this.hologramEntities.length === 0) {
+				this.stopCulling();
+			}
+		}, CULL_INTERVAL);
+	}
+
+	private stopCulling(): void {
+		if (this.cullRunId !== undefined) {
+			system.clearRun(this.cullRunId);
+			this.cullRunId = undefined;
+		}
 	}
 
 	clearPreview(): void {
-		if (this.previewHandle !== undefined) {
-			system.clearRun(this.previewHandle);
-			this.previewHandle = undefined;
-		}
 		this.cancel();
-		this.undo();
+		this.stopCulling();
+		for (const entity of this.hologramEntities) {
+			try {
+				entity.triggerEvent("dreamweaver:instant_despawn");
+			} catch {
+				// Entity already invalid/removed
+			}
+		}
+		this.hologramEntities = [];
+		log.info("Cleared hologram preview");
 	}
+
+	get isPreviewing(): boolean {
+		return this.hologramEntities.length > 0 || this.jobId !== undefined;
+	}
+
+	//#endregion
 
 	async undo(): Promise<void> {
 		const blocks = this.savedBlocks;

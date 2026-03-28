@@ -1,4 +1,4 @@
-import { Player, GameMode } from "@minecraft/server";
+import { Player } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { Schematic } from "../../codec/Schematic.js";
 import Codec from "../../codec/Codec.js";
@@ -43,7 +43,6 @@ export async function showCaptureResult(
 ): Promise<void> {
 	const { size } = schematic;
 	const total = schematic.getTotalNonAir();
-	const isCreative = player.getGameMode() === GameMode.Creative;
 
 	const form = new ActionFormData()
 		.title("§l§dCapture Result")
@@ -51,7 +50,8 @@ export async function showCaptureResult(
 			`§7Size: §f${size.x}§7×§f${size.y}§7×§f${size.z}\n§7Blocks: §f${formatCount(total)}`,
 		)
 		.button("Export to Chat")
-		.button(isCreative ? "Place at Position" : "Preview at Position")
+		.button("Place at Position")
+		.button("Preview at Position")
 		.button("Material List")
 		.button("Cancel");
 
@@ -65,14 +65,14 @@ export async function showCaptureResult(
 			break;
 		}
 		case 1: {
-			if (isCreative) {
-				await confirmPlace(player, schematic);
-			} else {
-				await confirmPreview(player, schematic);
-			}
+			await confirmPlace(player, schematic);
 			break;
 		}
 		case 2: {
+			await confirmPreview(player, schematic);
+			break;
+		}
+		case 3: {
 			await showMaterialList(player, schematic);
 			break;
 		}

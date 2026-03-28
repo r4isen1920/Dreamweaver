@@ -1,0 +1,28 @@
+{
+	"format_version": "1.20.41",
+	"minecraft:client_entity": {
+		"description": {
+			"identifier": "dreamweaver:hologram",
+			"materials": {
+				"default": "entity_alphatest"
+			},
+			"geometry": {
+				"default": "geometry.dreamweaver.hologram"
+			},
+			"textures": {
+				"default": "textures/entity/armor_stand"
+			},
+			"scripts": {
+				"animate": ["root"],
+				"should_update_bones_and_effects_offscreen": true
+			},
+			"animations": {
+				"root": "animation.dreamweaver.hologram"
+			},
+			"render_controllers": [
+				"controller.render.dreamweaver.default"
+			],
+			"enable_attachables": true
+		}
+	}
+}

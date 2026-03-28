@@ -1,0 +1,82 @@
+{
+	"format_version": "1.20.41",
+	"minecraft:entity": {
+		"description": {
+			"identifier": "dreamweaver:hologram",
+
+			"is_summonable": true
+		},
+
+		"components": {
+			"minecraft:type_family": {
+				"family": ["hologram", "inanimate"]
+			},
+
+			"minecraft:collision_box": {
+				"height": 0.0001,
+				"width": 0.0001
+			},
+			"minecraft:physics": {
+				"has_collision": false,
+				"has_gravity": false
+			},
+			"minecraft:knockback_resistance": {
+				"value": 1.0
+			},
+			"minecraft:damage_sensor": {
+				"triggers": [{
+					"deals_damage": false,
+					"cause": "all"
+				}]
+			},
+			"minecraft:pushable": {
+				"is_pushable": false,
+				"is_pushable_by_piston": false
+			},
+
+			"minecraft:shareables": {
+				"all_items": true,
+				"all_items_max_amount": 1,
+				"all_items_surplus_amount": -1,
+				"all_items_want_amount": -1,
+				"items": [
+					{ "item": "minecraft:dirt" }
+				]
+			},
+			"minecraft:inventory": {
+				"container_type": "inventory",
+				"inventory_size": 1,
+				"private": true
+			},
+			"minecraft:behavior.pickup_items": {
+				"priority": 0,
+				"max_dist": 4,
+				"goal_radius": 2,
+				"speed_multiplier": 0.0,
+				"pickup_based_on_chance": false,
+				"can_pickup_any_item": true
+			},
+			"minecraft:equip_item": {},
+			"minecraft:behavior.equip_item": {
+				"priority": 1
+			},
+
+			"minecraft:persistent": {},
+			"minecraft:conditional_bandwidth_optimization": {}
+		},
+
+		"component_groups": {
+			"dreamweaver:instant_despawn": {
+				"minecraft:instant_despawn": {}
+			}
+		},
+
+		"events": {
+			"dreamweaver:instant_despawn": {
+				"add": {
+					"component_groups": ["dreamweaver:instant_despawn"]
+				}
+			}
+		}
+	}
+}

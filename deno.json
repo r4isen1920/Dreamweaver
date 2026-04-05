@@ -1,0 +1,19 @@
+{
+    "imports": {
+        "#marathon/": "./packs/data/marathon/",
+        "@minecraft/vanilla-data": "npm:@minecraft/vanilla-data@1.21.90",
+        "@std/assert": "jsr:@std/assert@^1.0.13",
+        "@std/fs": "jsr:@std/fs@^1.0.18",
+        "@std/path": "jsr:@std/path@^1.1.0",
+        "@std/text": "jsr:@std/text@^1.0.14",
+        "jsonc-parser": "npm:jsonc-parser@^3.3.1"
+    },
+    "lint": {
+        "rules": {
+            "exclude": ["no-explicit-any"]
+        }
+    },
+    "fmt": {
+        "exclude": ["**/*"]
+    }
+}

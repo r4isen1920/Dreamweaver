@@ -16,13 +16,17 @@
 				"url": "github.com/MCDevKit/regolith-library",
 				"version": "2.15.0"
 			},
-			"packer": {
-				"url": "github.com/MCDevKit/regolith-library",
-				"version": "1.0.3"
+			"marathon": {
+				"url": "github.com/azurite-bedrock/regolith-filters",
+				"version": "1.0.1"
 			},
 			"meta_gen": {
 				"url": "github.com/r4isen1920/regolith-filters",
 				"version": "1.2.0"
+			},
+			"packer": {
+				"url": "github.com/MCDevKit/regolith-library",
+				"version": "1.0.3"
 			}
 		},
 		"formatVersion": "1.2.0",
@@ -34,13 +38,10 @@
 				},
 				"filters": [
 					{
-						"arguments": [
-							"--cache-all",
-							"--include",
-							"data/jsonte/soundDurations.templ",
-							"data/jsonte"
-						],
 						"filter": "jsonte"
+					},
+					{
+						"filter": "marathon"
 					},
 					{
 						"filter": "meta_gen",

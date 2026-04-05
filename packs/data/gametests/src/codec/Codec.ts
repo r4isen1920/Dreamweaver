@@ -103,7 +103,7 @@ export default class Codec {
 	static decode(parts: string[]): Schematic {
 		const parsed = parts.map((p) => {
 			const h = Codec.parseHeader(p);
-			if (!h) throw new Error("Invalid Dreamweaver schematic string");
+			if (!h) throw new Error("Invalid LitematicaPE schematic string");
 			return h;
 		});
 

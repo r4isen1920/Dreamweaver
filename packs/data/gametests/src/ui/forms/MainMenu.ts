@@ -9,7 +9,7 @@ import { showImportForm } from "./Import.js";
 
 export async function showMainMenu(player: Player): Promise<void> {
 	const form = new ActionFormData()
-		.title("§l§dDreamweaver")
+		.title("§l§dLitematicaPE")
 		.button("Get Wand", "textures/items/stick")
 		.button("Capture Selection")
 		.button("Import Schematic")

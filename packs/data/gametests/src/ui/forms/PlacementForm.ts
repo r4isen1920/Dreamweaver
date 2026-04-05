@@ -4,9 +4,9 @@ import { Schematic } from "../../codec/Schematic.js";
 import { PlacementSession } from "../../services/Placement.js";
 import { HologramSession } from "../../services/Hologram.js";
 import { formatCount } from "../../utils/String.js";
-import DreamweaverLogger from "../../utils/Logger.js";
+import LitematicaPELogger from "../../utils/Logger.js";
 
-const log = DreamweaverLogger.get("PlacementForm");
+const log = LitematicaPELogger.get("PlacementForm");
 
 //#region Place
 

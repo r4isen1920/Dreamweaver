@@ -8,7 +8,7 @@ import {
 } from '@minecraft/server';
 import Meta from '../Meta';
 import { BindThis, CustomCmd, OnWorldLoad } from '@bedrock-oss/stylish';
-import DreamweaverLogger from './Logger';
+import LitematicaPELogger from './Logger';
 import { Registry } from '@bedrock-oss/add-on-registry';
 
 
@@ -38,7 +38,7 @@ interface VersionData {
  */
 export default class Version {
 	private static _instance: Version;
-	private static readonly log = DreamweaverLogger.get('Version');
+	private static readonly log = LitematicaPELogger.get('Version');
 
 	/** Full version in string format (e.g., "v1.0.0") */
 	readonly version: string;

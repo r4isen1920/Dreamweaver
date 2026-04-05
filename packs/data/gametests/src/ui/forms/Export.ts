@@ -1,9 +1,9 @@
 import { Player } from "@minecraft/server";
 import { ModalFormData } from "@minecraft/server-ui";
 import { showForm } from "../FormHelper.js";
-import DreamweaverLogger from "../../utils/Logger.js";
+import LitematicaPELogger from "../../utils/Logger.js";
 
-const log = DreamweaverLogger.get("Export");
+const log = LitematicaPELogger.get("Export");
 
 //#region Export Form
 

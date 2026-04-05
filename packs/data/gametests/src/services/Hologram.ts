@@ -9,14 +9,14 @@ import { Vec3 } from "@bedrock-oss/bedrock-boost";
 import { Schematic } from "../codec/Schematic.js";
 import { getBlockShape, CUBE_SHAPE } from "../codec/ShapeMap.js";
 import { getBlockTextureIndex } from "../codec/TextureMap.js";
-import DreamweaverLogger from "../utils/Logger.js";
+import LitematicaPELogger from "../utils/Logger.js";
 import { showActionBarProgress, clearActionBar } from "../utils/ProgressBar.js";
 
-const log = DreamweaverLogger.get("Hologram");
+const log = LitematicaPELogger.get("Hologram");
 
 const PROGRESS_INTERVAL = 200;
-const HOLOGRAM_ENTITY = "dreamweaver:hologram";
-const BATCH_ENTITY = "dreamweaver:hologram_batch";
+const HOLOGRAM_ENTITY = "r4isen1920_litematicape:hologram";
+const BATCH_ENTITY = "r4isen1920_litematicape:hologram_batch";
 
 const BATCH_GRID = 4;
 const BITS_PER_MASK = 16;
@@ -109,11 +109,11 @@ export class HologramSession {
 											BATCH_ENTITY,
 											chunkWorldPos,
 										);
-										entity.setProperty("dreamweaver:tex", texIdx);
-										entity.setProperty("dreamweaver:m0", masks[0]);
-										entity.setProperty("dreamweaver:m1", masks[1]);
-										entity.setProperty("dreamweaver:m2", masks[2]);
-										entity.setProperty("dreamweaver:m3", masks[3]);
+										entity.setProperty("r4isen1920_litematicape:tex", texIdx);
+										entity.setProperty("r4isen1920_litematicape:m0", masks[0]);
+										entity.setProperty("r4isen1920_litematicape:m1", masks[1]);
+										entity.setProperty("r4isen1920_litematicape:m2", masks[2]);
+										entity.setProperty("r4isen1920_litematicape:m3", masks[3]);
 										session.entities.push(entity);
 										batchCount += cells.length;
 										spawnedThisTick += 1;
@@ -173,7 +173,7 @@ export class HologramSession {
 		this.cancel();
 		for (const entity of this.entities) {
 			try {
-				entity.triggerEvent("dreamweaver:instant_despawn");
+				entity.triggerEvent("r4isen1920_litematicape:instant_despawn");
 			} catch {
 				// Entity already invalid/removed
 			}

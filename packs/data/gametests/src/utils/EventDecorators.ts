@@ -51,9 +51,9 @@ import {
 	DataDrivenEntityTriggerAfterEvent,
 	ScriptEventCommandMessageAfterEvent,
 } from '@minecraft/server';
-import DreamweaverLogger from './Logger.js';
+import LitematicaPELogger from './Logger.js';
 
-const log = DreamweaverLogger.get('EventDecorators');
+const log = LitematicaPELogger.get('EventDecorators');
 
 type EventHandler<T> = (event: T) => void;
 

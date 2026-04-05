@@ -2,7 +2,7 @@ import { system, BlockVolume, Dimension, type Player } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
 import { Schematic, AIR_INDEX } from "../codec/Schematic.js";
 import { posToIndex } from "../utils/Indexing.js";
-import DreamweaverLogger from "../utils/Logger.js";
+import LitematicaPELogger from "../utils/Logger.js";
 import { ensureLoaded } from "../utils/ChunkLoader.js";
 import { showActionBarProgress, clearActionBar } from "../utils/ProgressBar.js";
 
@@ -14,7 +14,7 @@ const PROGRESS_INTERVAL = 200;
  * It iterates through the specified volume, reads block data, and constructs a Schematic representation.
  */
 export class CaptureService {
-	private static readonly log = DreamweaverLogger.get("Capture");
+	private static readonly log = LitematicaPELogger.get("Capture");
 
 	/**
 	 * Given a dimension and a block volume, captures the blocks within that volume and returns a Schematic object representing it.

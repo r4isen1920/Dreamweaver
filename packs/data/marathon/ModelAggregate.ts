@@ -169,7 +169,7 @@ function buildBatchIdentifier(description: JsonObject | undefined): string {
 	if (typeof identifier === 'string' && identifier.length > 0) {
 		return identifier.replace('.palette.', '.batch.');
 	}
-	return 'geometry.dreamweaver.holo.batch';
+	return 'geometry.r4isen1920_litematicape.holo.batch';
 }
 
 function flattenBonesForBatchCell(sourceBones: Bone[], offset: Vec3, suffix: string): Bone {
@@ -366,7 +366,7 @@ function buildInstanceIdentifier(description: JsonObject | undefined, x: number,
 		return `${identifier}.instance.${x}_${y}_${z}`;
 	}
 
-	return `geometry.dreamweaver.holo.instance.${x}_${y}_${z}`;
+	return `geometry.r4isen1920_litematicape.holo.instance.${x}_${y}_${z}`;
 }
 
 function asVec3(value: unknown, errorMessage: string): Vec3 {

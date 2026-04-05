@@ -2,36 +2,36 @@
 	"format_version": "1.26.0",
 	"minecraft:entity": {
 		"description": {
-			"identifier": "dreamweaver:hologram_batch",
+			"identifier": "r4isen1920_litematicape:hologram_batch",
 
 			"is_summonable": true,
 
 			"properties": {
-				"dreamweaver:tex": {
+				"r4isen1920_litematicape:tex": {
 					"client_sync": true,
 					"type": "int",
 					"range": [0, 1500],
 					"default": 0
 				},
-				"dreamweaver:m0": {
+				"r4isen1920_litematicape:m0": {
 					"client_sync": true,
 					"type": "int",
 					"range": [0, 65535],
 					"default": 0
 				},
-				"dreamweaver:m1": {
+				"r4isen1920_litematicape:m1": {
 					"client_sync": true,
 					"type": "int",
 					"range": [0, 65535],
 					"default": 0
 				},
-				"dreamweaver:m2": {
+				"r4isen1920_litematicape:m2": {
 					"client_sync": true,
 					"type": "int",
 					"range": [0, 65535],
 					"default": 0
 				},
-				"dreamweaver:m3": {
+				"r4isen1920_litematicape:m3": {
 					"client_sync": true,
 					"type": "int",
 					"range": [0, 65535],
@@ -71,15 +71,15 @@
 		},
 
 		"component_groups": {
-			"dreamweaver:instant_despawn": {
+			"r4isen1920_litematicape:instant_despawn": {
 				"minecraft:instant_despawn": {}
 			}
 		},
 
 		"events": {
-			"dreamweaver:instant_despawn": {
+			"r4isen1920_litematicape:instant_despawn": {
 				"add": {
-					"component_groups": ["dreamweaver:instant_despawn"]
+					"component_groups": ["r4isen1920_litematicape:instant_despawn"]
 				}
 			}
 		}

@@ -16,7 +16,7 @@ const CONFIG = {
 	cubeBoneNames: ['cube'],
 
 	bitsPerMask: 16,
-	maskProps: ['dreamweaver:m0', 'dreamweaver:m1', 'dreamweaver:m2', 'dreamweaver:m3'],
+	maskProps: ['r4isen1920_litematicape:m0', 'r4isen1920_litematicape:m1', 'r4isen1920_litematicape:m2', 'r4isen1920_litematicape:m3'],
 } as const;
 
 const logger = createLogger('RenderControllerGen');
@@ -34,7 +34,7 @@ function main() {
 	logger.info(`Found ${textureNames.length} block textures.`);
 
 	const renderController = buildRenderController(textureNames);
-	writeJsonFile('RP/render_controllers/dreamweaver_batch.rc.json', renderController, logger);
+	writeJsonFile('RP/render_controllers/r4isen1920_litematicape_batch.rc.json', renderController, logger);
 
 	const textureIndex = buildTextureIndexTs(textureNames);
 	writeTextureIndexFile(textureIndex);
@@ -55,7 +55,7 @@ function buildRenderController(textureNames: string[]): Record<string, unknown> 
 	return {
 		format_version: '1.8.0',
 		render_controllers: {
-			'controller.render.dreamweaver.batch.cube': {
+			'controller.render.r4isen1920_litematicape.batch.cube': {
 				arrays: {
 					textures: {
 						'Array.block_textures': textureArray,
@@ -63,7 +63,7 @@ function buildRenderController(textureNames: string[]): Record<string, unknown> 
 				},
 				geometry: 'Geometry.batch_cube',
 				materials: [{ '*': 'Material.default' }],
-				textures: ["Array.block_textures[q.property('dreamweaver:tex')]"],
+				textures: ["Array.block_textures[q.property('r4isen1920_litematicape:tex')]"],
 				part_visibility: [partVisibility],
 				is_hurt_color: {},
 				on_fire_color: {},

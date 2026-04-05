@@ -9,7 +9,7 @@ import { writeJsonFile } from './utils/Write.ts';
 //#region config
 
 const CONFIG = {
-	batchGeometryId: 'geometry.dreamweaver.holo.batch.common.cube',
+	batchGeometryId: 'geometry.r4isen1920_litematicape.holo.batch.common.cube',
 } as const;
 
 const logger = createLogger('ClientEntity');
@@ -27,7 +27,7 @@ function main() {
 	logger.info(`Found ${textureNames.length} block textures.`);
 
 	const clientEntity = buildClientEntity(textureNames);
-	writeJsonFile('RP/entity/dreamweaver/hologram_batch.ce.json', clientEntity, logger);
+	writeJsonFile('RP/entity/r4isen1920_litematicape/hologram_batch.ce.json', clientEntity, logger);
 
 	logger.info('Batch client entity generated.');
 }
@@ -51,7 +51,7 @@ function buildClientEntity(textureNames: string[]): Record<string, unknown> {
 		format_version: '1.26.0',
 		'minecraft:client_entity': {
 			description: {
-				identifier: 'dreamweaver:hologram_batch',
+				identifier: 'r4isen1920_litematicape:hologram_batch',
 				materials: {
 					default: 'entity_alphatest',
 				},
@@ -64,10 +64,10 @@ function buildClientEntity(textureNames: string[]): Record<string, unknown> {
 					should_update_bones_and_effects_offscreen: true,
 				},
 				animations: {
-					root: 'animation.dreamweaver.hologram_batch',
+					root: 'animation.r4isen1920_litematicape.hologram_batch',
 				},
 				render_controllers: [
-					'controller.render.dreamweaver.batch.cube',
+					'controller.render.r4isen1920_litematicape.batch.cube',
 				],
 			},
 		},

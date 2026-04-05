@@ -1,7 +1,7 @@
 import { Logger as Log, LogLevel } from "@bedrock-oss/bedrock-boost";
 import { OnWorldLoad } from "@bedrock-oss/stylish";
 
-export default class DreamweaverLogger {
+export default class LitematicaPELogger {
 	private constructor() {}
 
 	public static get(whatFor?: string): Log {
@@ -9,7 +9,7 @@ export default class DreamweaverLogger {
 		if (whatFor) {
 			tags.add(whatFor);
 		}
-		return Log.getLogger("Dreamweaver", ...Array.from(tags));
+		return Log.getLogger("LitematicaPE", ...Array.from(tags));
 	}
 
 	@OnWorldLoad

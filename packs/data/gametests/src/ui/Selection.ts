@@ -6,18 +6,18 @@ import {
 	type PlayerBreakBlockBeforeEvent,
 } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
-import DreamweaverLogger from "../utils/Logger.js";
+import LitematicaPELogger from "../utils/Logger.js";
 import {
 	BeforePlayerInteractWithBlock,
 	BeforePlayerBreakBlock,
 } from "../utils/EventDecorators.js";
 
-const log = DreamweaverLogger.get("Selection");
+const log = LitematicaPELogger.get("Selection");
 
 //#region Constants
 
 export const WAND_ITEM = "minecraft:stick";
-export const WAND_NAME = "§dDreamweaver Wand";
+export const WAND_NAME = "§dLitematicaPE Wand";
 const VOLUME_WARN = 262_144; // 64³
 
 //#endregion

@@ -1,8 +1,8 @@
 import { system, BlockVolume, InputPermissionCategory, type Player, type Vector3 } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
-import DreamweaverLogger from "./Logger.js";
+import LitematicaPELogger from "./Logger.js";
 
-const log = DreamweaverLogger.get("ChunkLoader");
+const log = LitematicaPELogger.get("ChunkLoader");
 
 //#region Types
 

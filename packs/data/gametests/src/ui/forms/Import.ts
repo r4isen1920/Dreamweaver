@@ -3,9 +3,9 @@ import { ModalFormData } from "@minecraft/server-ui";
 import Codec from "../../codec/Codec.js";
 import { showForm } from "../FormHelper.js";
 import { showCaptureResult } from "./CaptureResult.js";
-import DreamweaverLogger from "../../utils/Logger.js";
+import LitematicaPELogger from "../../utils/Logger.js";
 
-const log = DreamweaverLogger.get("Import");
+const log = LitematicaPELogger.get("Import");
 
 //#region Import Form
 

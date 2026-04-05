@@ -9,14 +9,14 @@ import {
 } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
 import { Schematic, AIR_INDEX } from "../codec/Schematic.js";
-import DreamweaverLogger from "../utils/Logger.js";
+import LitematicaPELogger from "../utils/Logger.js";
 import { ensureLoaded, type RestoreHandle } from "../utils/ChunkLoader.js";
 import { showActionBarProgress, clearActionBar } from "../utils/ProgressBar.js";
 
-const log = DreamweaverLogger.get("Placement");
+const log = LitematicaPELogger.get("Placement");
 
 const PROGRESS_INTERVAL = 200;
-const HOLOGRAM_ENTITY = "dreamweaver:hologram";
+const HOLOGRAM_ENTITY = "r4isen1920_litematicape:hologram";
 const CULL_DISTANCE = 64;
 const CULL_INTERVAL = 10;
 const SPAWNS_PER_TICK = 20;
@@ -172,7 +172,7 @@ export class PlacementSession {
 			this.hologramEntities = this.hologramEntities.filter((entity) => {
 				try {
 					if (playerPos.distance(entity.location) > CULL_DISTANCE) {
-						entity.triggerEvent("dreamweaver:instant_despawn");
+						entity.triggerEvent("r4isen1920_litematicape:instant_despawn");
 						return false;
 					}
 					return true;
@@ -200,7 +200,7 @@ export class PlacementSession {
 		this.stopCulling();
 		for (const entity of this.hologramEntities) {
 			try {
-				entity.triggerEvent("dreamweaver:instant_despawn");
+				entity.triggerEvent("r4isen1920_litematicape:instant_despawn");
 			} catch {
 				// Entity already invalid/removed
 			}

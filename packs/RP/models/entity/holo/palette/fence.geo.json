@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.dreamweaver.holo.palette.common.fence",
+				"identifier": "geometry.r4isen1920_litematicape.holo.palette.common.fence",
 				"texture_width": 16,
 				"texture_height": 16,
 				"visible_bounds_width": 2,

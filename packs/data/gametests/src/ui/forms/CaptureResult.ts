@@ -9,9 +9,9 @@ import { formatCount } from "../../utils/String.js";
 import { showExportForm } from "./Export.js";
 import { showMaterialList } from "./MaterialList.js";
 import { confirmPlace, confirmPreview } from "./PlacementForm.js";
-import DreamweaverLogger from "../../utils/Logger.js";
+import LitematicaPELogger from "../../utils/Logger.js";
 
-const log = DreamweaverLogger.get("CaptureResult");
+const log = LitematicaPELogger.get("CaptureResult");
 
 //#region Capture Flow
 
@@ -19,7 +19,7 @@ export async function captureFlow(player: Player): Promise<void> {
 	const sel = SelectionManager.get(player);
 	if (!sel.isComplete()) {
 		player.sendMessage(
-			"§cSelect two positions first using the Dreamweaver Wand.",
+			"§cSelect two positions first using the LitematicaPE Wand.",
 		);
 		return;
 	}

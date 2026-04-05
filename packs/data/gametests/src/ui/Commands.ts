@@ -9,9 +9,9 @@ import { WAND_ITEM, WAND_NAME, SelectionManager } from "./Selection.js";
 import { showMainMenu } from "./forms/MainMenu.js";
 import { showImportForm } from "./forms/Import.js";
 import { SystemScriptEventReceive } from "../utils/EventDecorators.js";
-import DreamweaverLogger from "../utils/Logger.js";
+import LitematicaPELogger from "../utils/Logger.js";
 
-const log = DreamweaverLogger.get("Commands");
+const log = LitematicaPELogger.get("Commands");
 
 //#region Constants
 
@@ -29,9 +29,9 @@ export function giveWand(player: Player): void {
 
 	const inventory = player.getComponent("inventory");
 	inventory?.container?.addItem(item);
-	log.info(`${player.name} received Dreamweaver Wand`);
+	log.info(`${player.name} received LitematicaPE Wand`);
 	player.sendMessage(
-		"§dReceived Dreamweaver Wand! §7Right-click to set Pos1, break to set Pos2.",
+		"§dReceived LitematicaPE Wand! §7Right-click to set Pos1, break to set Pos2.",
 	);
 }
 

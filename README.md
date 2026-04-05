@@ -1,6 +1,6 @@
-# Dreamweaver
+# LitematicaPE
 
-Dreamweaver is a Minecraft: Bedrock Edition Add-On that allows you to place and import schematics easily, and across the world.
+LitematicaPE is a Minecraft: Bedrock Edition Add-On that allows you to place and import schematics easily, and across the world.
 
 ## Setting up the development environment
 

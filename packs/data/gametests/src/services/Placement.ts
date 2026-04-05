@@ -274,5 +274,3 @@ export class PlacementSession {
 		return this.schematic.getBlockCount();
 	}
 }
-
-//#endregion

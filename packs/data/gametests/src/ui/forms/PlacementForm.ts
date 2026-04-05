@@ -2,6 +2,7 @@ import { Player } from "@minecraft/server";
 import { Vec3 } from "@bedrock-oss/bedrock-boost";
 import { Schematic } from "../../codec/Schematic.js";
 import { PlacementSession } from "../../services/Placement.js";
+import { HologramSession } from "../../services/Hologram.js";
 import { formatCount } from "../../utils/String.js";
 import DreamweaverLogger from "../../utils/Logger.js";
 
@@ -29,9 +30,9 @@ export async function confirmPreview(
 	schematic: Schematic,
 ): Promise<void> {
 	const origin = Vec3.from(player.location).floor();
-	const session = new PlacementSession(schematic, origin, player.dimension, player);
+	const session = new HologramSession(schematic, origin, player.dimension, player);
 	const spawned = await session.preview();
-	log.info(`${player.name} previewing ${spawned} hologram blocks`);
+	log.info(`${player.name} previewing ${spawned} hologram blocks (batch)`);
 	player.sendMessage(
 		`§aPreview: ${formatCount(spawned)} holograms spawned.`,
 	);

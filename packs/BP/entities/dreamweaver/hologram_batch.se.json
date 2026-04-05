@@ -1,0 +1,87 @@
+{
+	"format_version": "1.26.0",
+	"minecraft:entity": {
+		"description": {
+			"identifier": "dreamweaver:hologram_batch",
+
+			"is_summonable": true,
+
+			"properties": {
+				"dreamweaver:tex": {
+					"client_sync": true,
+					"type": "int",
+					"range": [0, 1500],
+					"default": 0
+				},
+				"dreamweaver:m0": {
+					"client_sync": true,
+					"type": "int",
+					"range": [0, 65535],
+					"default": 0
+				},
+				"dreamweaver:m1": {
+					"client_sync": true,
+					"type": "int",
+					"range": [0, 65535],
+					"default": 0
+				},
+				"dreamweaver:m2": {
+					"client_sync": true,
+					"type": "int",
+					"range": [0, 65535],
+					"default": 0
+				},
+				"dreamweaver:m3": {
+					"client_sync": true,
+					"type": "int",
+					"range": [0, 65535],
+					"default": 0
+				}
+			}
+		},
+
+		"components": {
+			"minecraft:type_family": {
+				"family": ["hologram", "inanimate"]
+			},
+
+			"minecraft:collision_box": {
+				"height": 0.0,
+				"width": 0.0
+			},
+			"minecraft:physics": {
+				"has_collision": false,
+				"has_gravity": false
+			},
+			"minecraft:knockback_resistance": {
+				"value": 1.0
+			},
+			"minecraft:damage_sensor": {
+				"triggers": [
+					{
+						"deals_damage": "no",
+						"cause": "all"
+					}
+				]
+			},
+
+			"minecraft:cannot_be_attacked": {},
+			"minecraft:persistent": {},
+			"minecraft:conditional_bandwidth_optimization": {}
+		},
+
+		"component_groups": {
+			"dreamweaver:instant_despawn": {
+				"minecraft:instant_despawn": {}
+			}
+		},
+
+		"events": {
+			"dreamweaver:instant_despawn": {
+				"add": {
+					"component_groups": ["dreamweaver:instant_despawn"]
+				}
+			}
+		}
+	}
+}

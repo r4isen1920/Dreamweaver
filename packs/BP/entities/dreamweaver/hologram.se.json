@@ -1,5 +1,5 @@
 {
-	"format_version": "1.20.41",
+	"format_version": "1.26.0",
 	"minecraft:entity": {
 		"description": {
 			"identifier": "dreamweaver:hologram",
@@ -13,8 +13,8 @@
 			},
 
 			"minecraft:collision_box": {
-				"height": 0.0001,
-				"width": 0.0001
+				"height": 0.0,
+				"width": 0.0
 			},
 			"minecraft:physics": {
 				"has_collision": false,
@@ -24,14 +24,12 @@
 				"value": 1.0
 			},
 			"minecraft:damage_sensor": {
-				"triggers": [{
-					"deals_damage": false,
-					"cause": "all"
-				}]
-			},
-			"minecraft:pushable": {
-				"is_pushable": false,
-				"is_pushable_by_piston": false
+				"triggers": [
+					{
+						"deals_damage": "no",
+						"cause": "all"
+					}
+				]
 			},
 
 			"minecraft:shareables": {
@@ -39,9 +37,7 @@
 				"all_items_max_amount": 1,
 				"all_items_surplus_amount": -1,
 				"all_items_want_amount": -1,
-				"items": [
-					{ "item": "minecraft:dirt" }
-				]
+				"items": [{ "item": "minecraft:dirt" }]
 			},
 			"minecraft:inventory": {
 				"container_type": "inventory",
@@ -61,6 +57,7 @@
 				"priority": 1
 			},
 
+			"minecraft:cannot_be_attacked": {},
 			"minecraft:persistent": {},
 			"minecraft:conditional_bandwidth_optimization": {}
 		},
